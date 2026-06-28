@@ -37,6 +37,9 @@ module.exports = {
 
         // RapidAPI
         RAPIDAPI_KEY: 'your-rapidapi-key',
+
+        // Firebase — paste the service account JSON as a single-line string
+        FIREBASE_SERVICE_ACCOUNT: '{"type":"service_account","project_id":"..."}',
       }
     }
   ]

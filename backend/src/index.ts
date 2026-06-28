@@ -22,8 +22,6 @@ import interviewsRouter from './routes/interviews'
 import notificationsRouter from './routes/notifications'
 import geoRouter from './routes/geo'
 import solveScreenRouter from './routes/solveScreen'
-import { startInterviewReminderJob } from './jobs/interviewReminder'
-import { startJobSearchCron } from './jobs/jobSearchCron'
 import { getAvailableProviders } from './provider-registry'
 import { LiveSession } from './live/session'
 import { AuthPayload } from './middleware/auth'
@@ -144,9 +142,6 @@ wss.on('connection', (ws, req) => {
     session = null
   })
 })
-
-startInterviewReminderJob()
-startJobSearchCron()
 
 server.listen(PORT, () => {
   const providers = getAvailableProviders()

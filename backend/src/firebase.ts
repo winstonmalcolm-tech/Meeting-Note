@@ -1,10 +1,11 @@
 import admin from 'firebase-admin'
-import serviceAccount from './firebase_service.json'
 
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  })
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT
+  if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT env var is not set')
+
+  const serviceAccount = JSON.parse(raw) as admin.ServiceAccount
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
 }
 
 export const messaging = admin.messaging()
