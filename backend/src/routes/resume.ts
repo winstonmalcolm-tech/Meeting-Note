@@ -1,10 +1,10 @@
 import { Router } from 'express'
 import multer from 'multer'
-import { createRequire } from 'module'
 import mammoth from 'mammoth'
 import { authMiddleware } from '../middleware/auth'
 
-const require = createRequire(import.meta.url)
+// pdf-parse has no TS types; require is available in CommonJS output
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdfParse = require('pdf-parse') as (buffer: Buffer) => Promise<{ text: string }>
 
 const router = Router()

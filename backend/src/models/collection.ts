@@ -33,7 +33,7 @@ const collectionSchema = new Schema<ICollection>({
   createdAt:   { type: Date, default: Date.now },
   items:       { type: [itemSchema], default: [] },
   summary:     { type: Schema.Types.Mixed },
-  diagrams:    { type: [Schema.Types.Mixed], default: [] }
+  diagrams:    { type: [Schema.Types.Mixed], default: [] } as any
 })
 
 export const Collection = model<ICollection>('Collection', collectionSchema)
