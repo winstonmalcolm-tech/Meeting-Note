@@ -2,8 +2,6 @@ import cron from 'node-cron'
 import { Interview } from '../models/interview'
 import { User } from '../models/user'
 import { Notification } from '../models/notification'
-import { messaging } from '../firebase'
-
 // Runs every day at 9:00 AM server time
 export function startInterviewReminderJob() {
   cron.schedule('0 9 * * *', async () => {
@@ -57,28 +55,6 @@ export async function sendReminders() {
         type: 'interview_reminder',
         refId: interview._id.toString(),
       })
-
-      // Send FCM push to all registered devices (mobile + any web push)
-      if (user.fcmTokens.length > 0) {
-        const response = await messaging.sendEachForMulticast({
-          tokens: user.fcmTokens,
-          notification: { title, body },
-          data: { type: 'interview_reminder', interviewId: interview._id.toString() },
-          android: { priority: 'high' },
-          apns: { payload: { aps: { sound: 'default' } } },
-        })
-
-        // Clean up invalid tokens
-        const invalidTokens: string[] = []
-        response.responses.forEach((r, i) => {
-          if (!r.success && r.error?.code === 'messaging/registration-token-not-registered') {
-            invalidTokens.push(user.fcmTokens[i])
-          }
-        })
-        if (invalidTokens.length > 0) {
-          await User.updateOne({ _id: user._id }, { $pull: { fcmTokens: { $in: invalidTokens } } })
-        }
-      }
 
       // Mark reminder as sent so we don't fire again
       await Interview.updateOne({ _id: interview._id }, { reminderSent: true })

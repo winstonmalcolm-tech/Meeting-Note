@@ -4,7 +4,6 @@ import { SavedJob } from '../models/savedJob'
 import { User } from '../models/user'
 import { Notification } from '../models/notification'
 import { UserProfile } from '../models/userProfile'
-import { messaging } from '../firebase'
 import { fetchFromJSearch, scoreFit } from '../routes/jobSearch'
 import { getAvailableProviders } from '../provider-registry'
 
@@ -88,27 +87,6 @@ export async function runJobSearchRefresh() {
 
       await Notification.create({ userId, title, body, type: 'job_search_results', refId: userId })
 
-      const user = await User.findById(userId).select('fcmTokens')
-      if (user && user.fcmTokens.length > 0) {
-        const response = await messaging.sendEachForMulticast({
-          tokens: user.fcmTokens,
-          notification: { title, body },
-          data: { type: 'job_search_results' },
-          android: { priority: 'high' },
-          apns: { payload: { aps: { sound: 'default' } } },
-        })
-
-        // Clean up stale tokens
-        const invalidTokens: string[] = []
-        response.responses.forEach((r, i) => {
-          if (!r.success && r.error?.code === 'messaging/registration-token-not-registered') {
-            invalidTokens.push(user.fcmTokens[i])
-          }
-        })
-        if (invalidTokens.length > 0) {
-          await User.updateOne({ _id: userId }, { $pull: { fcmTokens: { $in: invalidTokens } } })
-        }
-      }
     } catch (err) {
       console.error(`[cron] Failed to notify user ${userId}:`, err instanceof Error ? err.message : err)
     }
