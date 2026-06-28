@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* 3 weights only: regular / medium / bold */
+  --font-weight-thin:        400;
+  --font-weight-extralight:  400;
+  --font-weight-light:       400;
+  --font-weight-normal:      400;
+  --font-weight-medium:      500;
+  --font-weight-semibold:    500;
+  --font-weight-bold:        700;
+  --font-weight-extrabold:   700;
+  --font-weight-black:       700;
+}
+
+/* ── Design tokens ── */
+:root {
+  --color-bg:             #18181B;
+  --color-bg-surface:     #27272A;
+  --color-bg-elevated:    #3F3F46;
+  --color-bg-input:       #1C1C1F;
+  --color-text:           #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted:     #71717A;
+  --color-border:         #3F3F46;
+  --color-border-subtle:  rgba(255, 255, 255, 0.06);
+  --color-accent:         #6EE76E;
+  --color-accent-fg:      #050507;
+  --color-accent-subtle:  rgba(110, 231, 110, 0.08);
+  --color-error:          #F87171;
+  --color-error-bg:       rgba(239, 68, 68, 0.10);
+  --color-error-border:   rgba(239, 68, 68, 0.20);
+
+  /* Accent surface / border / on-accent text */
+  --color-accent-border:  rgba(110, 231, 110, 0.30);
+  --color-accent-on:      #9afa9a;
+
+  /* Info (blue note blocks) */
+  --color-info-surface:   #1e3a5f;
+  --color-info-text:      #cce4ff;
+
+  /* Warning */
+  --color-warn:           #facc15;
+  --color-warn-surface:   rgba(250, 204, 21, 0.12);
+}
+
+:root.light {
+  --color-bg:             #FFFFFF;
+  --color-bg-surface:     #F4F4F5;
+  --color-bg-elevated:    #E4E4E7;
+  --color-bg-input:       #FAFAFA;
+  --color-text:           #18181B;
+  --color-text-secondary: #52525B;
+  --color-text-muted:     #71717A;
+  --color-border:         #D4D4D8;
+  --color-border-subtle:  rgba(0, 0, 0, 0.07);
+  --color-accent:         #16A34A;
+  --color-accent-fg:      #FFFFFF;
+  --color-accent-subtle:  rgba(22, 163, 74, 0.08);
+  --color-error:          #DC2626;
+  --color-error-bg:       rgba(220, 38, 38, 0.08);
+  --color-error-border:   rgba(220, 38, 38, 0.18);
+
+  --color-accent-border:  rgba(22, 163, 74, 0.35);
+  --color-accent-on:      #15803d;
+
+  --color-info-surface:   #dbeafe;
+  --color-info-text:      #1e40af;
+
+  --color-warn:           #d97706;
+  --color-warn-surface:   rgba(217, 119, 6, 0.10);
+}
+
+/* ── Base reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.15s, color 0.15s;
+}
+
+body {
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ── Type hierarchy ── */
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── Reading column (45-75 chars ≈ 65ch) ── */
+.reading-col {
+  max-width: 65ch;
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      /* entire body is a drag handle — buttons override with no-drag */
+      -webkit-app-region: drag;
+      user-select: none;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      height: 100%;
+      background: rgba(12, 12, 12, 0.94);
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.7);
+    }
+
+    button {
+      -webkit-app-region: no-drag;
+      border: none;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      white-space: nowrap;
+      line-height: 1;
+      padding: 5px 13px;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:hover  { opacity: 0.8; }
+    button:active { opacity: 0.6; }
+    button:disabled { pointer-events: none; opacity: 0.3; }
+
+    .kbd {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1.2;
+    }
+
+    #btnPause {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+    }
+    #btnPause.paused {
+      background: rgba(250, 204, 21, 0.15);
+      color: #fde047;
+    }
+
+    #btnStop {
+      background: #ef4444;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    #btnScreenshot {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+    }
+    #btnScreenshot.saved {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+    }
+
+    #btnHide {
+      background: rgba(255, 255, 255, 0.07);
+      color: #666;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #btnSolve {
+      background: rgba(96, 165, 250, 0.14);
+      color: #93c5fd;
+      border: 1px solid rgba(96, 165, 250, 0.18);
+    }
+    #btnSolve:hover { background: rgba(96, 165, 250, 0.25); opacity: 1; }
+    #btnSolve.solving {
+      animation: solvepulse 0.9s ease-in-out infinite;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .btn-nav {
+      background: transparent;
+      color: #444;
+      padding: 4px 8px;
+      font-size: 13px;
+    }
+    .btn-nav:not(:disabled) { color: #888; }
+    .btn-nav:hover:not(:disabled) { opacity: 1; color: #bbb; }
+
+    .sep {
+      width: 1px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    @keyframes solvepulse {
+      0%, 100% { background: rgba(96, 165, 250, 0.14); }
+      50%       { background: rgba(96, 165, 250, 0.32); }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <!-- Pause / Resume listening (does NOT end the session) -->
+    <button id="btnPause" onclick="handlePause()">⏸ Pause <span class="kbd">⌃⇧Space</span></button>
+
+    <!-- Stop ends the entire session -->
+    <button id="btnStop" onclick="handleStop()">⏹ Stop <span class="kbd">⌃⇧X</span></button>
+
+    <div class="sep"></div>
+
+    <button id="btnScreenshot" onclick="handleScreenshot()">Take Screenshot <span class="kbd">⌃⇧G</span></button>
+
+    <button id="btnHide" onclick="handleToggleOverlay()" title="Toggle AI panel">H</button>
+
+    <button id="btnSolve" onclick="handleSolve()">Solve Screen <span class="kbd">⌃⇧S</span></button>
+
+    <div class="sep"></div>
+
+    <button class="btn-nav" id="btnPrev" disabled onclick="handlePrev()">&#9664;</button>
+    <button class="btn-nav" id="btnNext" disabled onclick="handleNext()">&#9654;</button>
+  </div>
+
+  <script>
+    let isPaused = false
+    let isSolving = false
+    let solutionCount = 0
+    let solutionIndex = -1
+
+    function handlePause() {
+      window.bannerApi.sendCommand('toggle-pause')
+    }
+
+    function handleStop() {
+      window.bannerApi.sendCommand('stop')
+    }
+
+    function handleScreenshot() {
+      window.bannerApi.sendCommand('screenshot')
+    }
+
+    function handleToggleOverlay() {
+      window.bannerApi.sendCommand('toggle-ai-overlay')
+    }
+
+    function handleSolve() {
+      if (isSolving) return
+      window.bannerApi.sendCommand('solve-screen')
+      setSolving(true)
+    }
+
+    function handlePrev() { window.bannerApi.sendCommand('prev') }
+    function handleNext() { window.bannerApi.sendCommand('next') }
+
+    function setSolving(solving) {
+      isSolving = solving
+      const btn = document.getElementById('btnSolve')
+      if (solving) {
+        btn.classList.add('solving')
+        btn.innerHTML = 'Solving…'
+      } else {
+        btn.classList.remove('solving')
+        btn.innerHTML = 'Solve Screen <span class="kbd">⌃⇧S</span>'
+      }
+    }
+
+    function updatePauseButton() {
+      const btn = document.getElementById('btnPause')
+      if (isPaused) {
+        btn.classList.add('paused')
+        btn.innerHTML = '▶ Resume <span class="kbd">⌃⇧Space</span>'
+      } else {
+        btn.classList.remove('paused')
+        btn.innerHTML = '⏸ Pause <span class="kbd">⌃⇧Space</span>'
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById('btnPrev').disabled = solutionCount === 0 || solutionIndex <= 0
+      document.getElementById('btnNext').disabled = solutionCount === 0 || solutionIndex >= solutionCount - 1
+    }
+
+    window.bannerApi.onEvent((event) => {
+      if (event.type === 'state') {
+        isPaused = event.isPaused
+        updatePauseButton()
+      }
+
+      if (event.type === 'solve-done') {
+        setSolving(false)
+        solutionCount = event.count
+        solutionIndex = event.index
+        updateNavButtons()
+      }
+
+      if (event.type === 'nav-update') {
+        solutionCount = event.count
+        solutionIndex = event.index
+        updateNavButtons()
+      }
+
+      if (event.type === 'solving') {
+        setSolving(true)
+      }
+
+      if (event.type === 'solve-error') {
+        setSolving(false)
+      }
+
+      if (event.type === 'screenshot-taken') {
+        const btn = document.getElementById('btnScreenshot')
+        btn.classList.add('saved')
+        btn.textContent = '✓ Saved'
+        setTimeout(() => {
+          btn.classList.remove('saved')
+          btn.textContent = 'Take Screenshot'
+        }, 1800)
+      }
+    })
+  </script>
+</body>
+</html>

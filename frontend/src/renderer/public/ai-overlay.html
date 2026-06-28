@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      user-select: none;
+    }
+
+    .window {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: rgba(10, 10, 10, 0.93);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      -webkit-app-region: drag;
+      flex-shrink: 0;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #555;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .status-dot.listening { background: #4ade80; animation: pulse 1.4s ease-in-out infinite; }
+    .status-dot.thinking  { background: #60a5fa; animation: pulse 0.8s ease-in-out infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      flex: 1;
+    }
+
+    .header-btn {
+      -webkit-app-region: no-drag;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: #666;
+      border-radius: 5px;
+      padding: 3px 9px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .header-btn:hover { background: rgba(255,255,255,0.12); color: #aaa; }
+    .header-btn.stop { background: rgba(239,68,68,0.15); color: #f87171; }
+    .header-btn.stop:hover { background: rgba(239,68,68,0.25); }
+
+    /* ── Body ── */
+    .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3a3a3a;
+      padding: 8px 14px 4px;
+      flex-shrink: 0;
+    }
+
+    .section-text {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 14px 10px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #ccc;
+      word-break: break-word;
+    }
+
+    .section-text.transcript { color: #777; font-style: italic; }
+    .section-text.response   { color: #d4d4d8; }
+
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+      margin: 0 10px;
+    }
+
+    .placeholder {
+      color: #333;
+      font-style: italic;
+    }
+
+    /* cursor blink when AI is typing */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      background: #60a5fa;
+      margin-left: 1px;
+      vertical-align: middle;
+      animation: blink-cursor 0.7s step-end infinite;
+    }
+    @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ── Markdown styles ── */
+    .response strong { color: #f0f0f0; font-weight: 600; }
+    .response em     { color: #c4c4c8; font-style: italic; }
+
+    .response h1, .response h2, .response h3 {
+      color: #e5e5e5;
+      font-weight: 600;
+      margin: 10px 0 4px;
+      line-height: 1.3;
+    }
+    .response h1 { font-size: 13.5px; }
+    .response h2 { font-size: 12.5px; }
+    .response h3 { font-size: 12px; color: #aaa; }
+
+    .response ul, .response ol {
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+    .response li { margin: 2px 0; }
+
+    .response pre {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .response pre code {
+      font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 11px;
+      line-height: 1.55;
+      color: #a5f3fc;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .response code {
+      font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 11px;
+      color: #a5f3fc;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      padding: 1px 5px;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="header">
+      <div class="status-dot" id="dot"></div>
+      <span class="title" id="statusLabel">AI Assistant</span>
+      <button class="header-btn stop" id="btnStop" onclick="handleStop()">Stop</button>
+      <button class="header-btn" id="btnClose" onclick="handleClose()">✕</button>
+    </div>
+
+    <div class="body">
+      <!-- Hearing section -->
+      <div class="section" style="flex: 0 0 auto; max-height: 36%;">
+        <div class="section-label">Hearing</div>
+        <div class="section-text transcript" id="transcript">
+          <span class="placeholder">Listening for speech…</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- AI response section -->
+      <div class="section">
+        <div class="section-label">AI</div>
+        <div class="section-text response" id="response">
+          <span class="placeholder">Response will appear here…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dot         = document.getElementById('dot')
+    const statusLabel = document.getElementById('statusLabel')
+    const transcriptEl = document.getElementById('transcript')
+    const responseEl   = document.getElementById('response')
+
+    let aiText = ''
+    let isThinking = false
+
+    function handleStop()  { window.aiOverlayApi.sendCommand('stop') }
+    function handleClose() { window.aiOverlayApi.sendCommand('close') }
+
+    function setStatus(status) {
+      dot.className = 'status-dot ' + status
+      const labels = { idle: 'AI Assistant', listening: 'Listening…', thinking: 'Thinking…', error: 'Error' }
+      statusLabel.textContent = labels[status] ?? 'AI Assistant'
+    }
+
+    function scrollToBottom(el) { el.scrollTop = el.scrollHeight }
+
+    // ── Lightweight markdown renderer ──────────────────────────────────────
+    function esc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    }
+
+    function renderMarkdown(text) {
+      if (!text) return '<span class="placeholder">Response will appear here…</span>'
+
+      // 1. Extract fenced code blocks so inner content is preserved verbatim
+      const blocks = []
+      text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+        const i = blocks.length
+        blocks.push(`<pre><code>${esc(code.trimEnd())}</code></pre>`)
+        return `\x00BLOCK${i}\x00`
+      })
+
+      // 2. Escape HTML in the remaining prose
+      text = esc(text)
+
+      // 3. Inline code
+      text = text.replace(/`([^`\n]+)`/g, (_, c) => `<code>${c}</code>`)
+
+      // 4. Bold and italic
+      text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      text = text.replace(/\*(.+?)\*/g, '<em>$1</em>')
+
+      // 5. Headers
+      text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      text = text.replace(/^## (.+)$/gm,  '<h2>$1</h2>')
+      text = text.replace(/^# (.+)$/gm,   '<h1>$1</h1>')
+
+      // 6. Ordered and unordered list items
+      text = text.replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+      text = text.replace(/^[-*] (.+)$/gm,  '<li>$1</li>')
+      // wrap consecutive <li> runs in <ul>
+      text = text.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
+
+      // 7. Newlines → <br> (outside block-level tags)
+      text = text.replace(/\n/g, '<br>')
+
+      // 8. Restore code blocks (no escaping needed — already done above)
+      text = text.replace(/\x00BLOCK(\d+)\x00/g, (_, i) => blocks[+i])
+
+      return text
+    }
+
+    // ── Event handling ─────────────────────────────────────────────────────
+    window.aiOverlayApi.onEvent((event) => {
+      if (event.type === 'status') {
+        setStatus(event.status)
+        isThinking = event.status === 'thinking'
+        if (isThinking) {
+          aiText = ''
+          responseEl.innerHTML = '<span class="cursor"></span>'
+        }
+      }
+
+      if (event.type === 'ai_thinking') {
+        aiText = ''
+        responseEl.innerHTML = '<span class="cursor"></span>'
+      }
+
+      if (event.type === 'transcript') {
+        transcriptEl.textContent = event.text || ''
+        if (!transcriptEl.textContent) {
+          transcriptEl.innerHTML = '<span class="placeholder">Listening for speech…</span>'
+        }
+        scrollToBottom(transcriptEl)
+      }
+
+      if (event.type === 'ai_token') {
+        isThinking = false
+        aiText += event.token
+        // Show plain text while streaming so the cursor effect stays smooth
+        responseEl.textContent = aiText
+        scrollToBottom(responseEl)
+      }
+
+      if (event.type === 'ai_done') {
+        isThinking = false
+        // Render the completed response as formatted markdown
+        responseEl.innerHTML = renderMarkdown(aiText)
+        scrollToBottom(responseEl)
+      }
+
+      if (event.type === 'reset') {
+        aiText = ''
+        transcriptEl.innerHTML = '<span class="placeholder">Listening for speech…</span>'
+        responseEl.innerHTML = '<span class="placeholder">Response will appear here…</span>'
+      }
+    })
+  </script>
+</body>
+</html>

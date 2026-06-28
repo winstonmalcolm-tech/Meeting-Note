@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* 3 weights only: regular / medium / bold */
+  --font-weight-thin:        400;
+  --font-weight-extralight:  400;
+  --font-weight-light:       400;
+  --font-weight-normal:      400;
+  --font-weight-medium:      500;
+  --font-weight-semibold:    500;
+  --font-weight-bold:        700;
+  --font-weight-extrabold:   700;
+  --font-weight-black:       700;
+}
+
+/* ── Design tokens ── */
+:root {
+  --color-bg:             #18181B;
+  --color-bg-surface:     #27272A;
+  --color-bg-elevated:    #3F3F46;
+  --color-bg-input:       #1C1C1F;
+  --color-text:           #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted:     #71717A;
+  --color-border:         #3F3F46;
+  --color-border-subtle:  rgba(255, 255, 255, 0.06);
+  --color-accent:         #6EE76E;
+  --color-accent-fg:      #050507;
+  --color-accent-subtle:  rgba(110, 231, 110, 0.08);
+  --color-error:          #F87171;
+  --color-error-bg:       rgba(239, 68, 68, 0.10);
+  --color-error-border:   rgba(239, 68, 68, 0.20);
+}
+
+:root.light {
+  --color-bg:             #FFFFFF;
+  --color-bg-surface:     #F4F4F5;
+  --color-bg-elevated:    #E4E4E7;
+  --color-bg-input:       #FAFAFA;
+  --color-text:           #18181B;
+  --color-text-secondary: #52525B;
+  --color-text-muted:     #71717A;
+  --color-border:         #D4D4D8;
+  --color-border-subtle:  rgba(0, 0, 0, 0.07);
+  --color-accent:         #16A34A;
+  --color-accent-fg:      #FFFFFF;
+  --color-accent-subtle:  rgba(22, 163, 74, 0.08);
+  --color-error:          #DC2626;
+  --color-error-bg:       rgba(220, 38, 38, 0.08);
+  --color-error-border:   rgba(220, 38, 38, 0.18);
+}
+
+/* ── Base ── */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #app {
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.15s, color 0.15s;
+}
+
+body {
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ── Type hierarchy ── */
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── Reading column (45-75 chars ≈ 65ch) ── */
+.reading-col {
+  max-width: 65ch;
+}
+
+/* ── Light-mode overrides for dark-first Tailwind classes ── */
+
+/* Page backgrounds */
+.light .bg-\[\#050507\]     { background-color: var(--color-bg) !important; }
+.light .bg-\[\#0a0a0a\]     { background-color: var(--color-bg) !important; }
+.light .bg-\[\#050507\]\/80 { background-color: rgba(255,255,255,0.85) !important; }
+.light .bg-\[\#050507\]\/90 { background-color: rgba(255,255,255,0.92) !important; }
+
+/* Card / surface backgrounds */
+.light .bg-white\/2  { background-color: rgba(0,0,0,0.025) !important; }
+.light .bg-white\/3  { background-color: rgba(0,0,0,0.04)  !important; }
+.light .bg-white\/4  { background-color: rgba(0,0,0,0.05)  !important; }
+.light .bg-white\/6  { background-color: rgba(0,0,0,0.07)  !important; }
+
+/* Borders */
+.light .border-white\/5  { border-color: var(--color-border) !important; }
+.light .border-white\/8  { border-color: var(--color-border) !important; }
+.light .border-white\/10 { border-color: var(--color-border) !important; }
+
+/* Text */
+.light .text-white    { color: var(--color-text)           !important; }
+.light .text-zinc-400 { color: var(--color-text-secondary)  !important; }
+.light .text-zinc-500 { color: var(--color-text-muted)      !important; }
+.light .text-zinc-600 { color: var(--color-text-muted)      !important; }
+
+/* Accent */
+.light .text-\[\#6ee76e\] { color: var(--color-accent) !important; }
+.light .text-\[\#86efac\] { color: #15803d             !important; }
+
+/* Backdrop nav */
+.light nav.backdrop-blur-md { background-color: rgba(255,255,255,0.9) !important; }
+
+/* Interview callout section */
+.light .from-\[\#0a1a0a\]   { --tw-gradient-from: #f0fdf4 !important; }
+.light .to-\[\#05070a\]     { --tw-gradient-to: #f8fafc  !important; }
+.light .bg-\[\#0a0a0a\]\/90 { background-color: rgba(255,255,255,0.95) !important; }

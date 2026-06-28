@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetingNote Autofill</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- LOADING -->
+  <div id="view-loading" class="view">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="view-login" class="view hidden">
+    <div class="brand">
+      <span class="brand-green">Meeting</span><span class="brand-white">Note</span>
+      <div class="brand-sub">Job Autofill</div>
+    </div>
+    <form id="login-form">
+      <label>
+        Email
+        <input type="email" id="input-email" placeholder="you@example.com" autocomplete="email" />
+      </label>
+      <label>
+        Password
+        <input type="password" id="input-password" placeholder="••••••••" autocomplete="current-password" />
+      </label>
+      <div id="login-error" class="error hidden"></div>
+      <button type="submit" id="btn-login">Sign In</button>
+    </form>
+  </div>
+
+  <!-- MAIN -->
+  <div id="view-main" class="view hidden">
+    <div class="header">
+      <div class="user-row">
+        <span id="user-name" class="user-name"></span>
+        <span id="plan-badge" class="plan-badge"></span>
+      </div>
+      <button id="btn-signout" class="link-btn">Sign out</button>
+    </div>
+
+    <div class="profile-card">
+      <div class="status-row">
+        <span class="status-label">Role</span>
+        <span id="status-role" class="status-value"></span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Resume</span>
+        <span id="status-resume" class="check"></span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Cover letter</span>
+        <span id="status-cover" class="check"></span>
+      </div>
+    </div>
+
+    <button id="btn-autofill" class="primary-btn">Auto-fill This Page</button>
+    <div id="fill-result" class="fill-result hidden"></div>
+
+    <button id="btn-tailor" class="secondary-btn">Optimize Resume for This Job</button>
+    <div id="tailor-status" class="tailor-status hidden"></div>
+
+    <div id="main-error" class="error hidden"></div>
+
+    <div class="hint">✨ Suggest buttons are active on all text fields</div>
+
+    <div class="footer">
+      <button id="btn-refresh" class="link-btn">Refresh profile</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      -webkit-app-region: drag;
+      user-select: none;
+    }
+
+    .panel {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(12, 12, 12, 0.92);
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 4px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      flex-shrink: 0;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    .dot.paused {
+      background: #555;
+      animation: none;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    .timer {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e5e5e5;
+      min-width: 48px;
+      letter-spacing: 0.5px;
+    }
+
+    .sep {
+      width: 1px;
+      height: 16px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    button {
+      -webkit-app-region: no-drag;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    button:hover { opacity: 0.8; }
+
+    #btnPause {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ccc;
+    }
+
+    #btnStop {
+      background: #ef4444;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <div class="dot" id="dot"></div>
+    <span class="timer" id="timer">00:00</span>
+    <div class="sep"></div>
+    <button id="btnPause" onclick="handlePause()">Pause</button>
+    <button id="btnStop" onclick="handleStop()">Stop</button>
+  </div>
+
+  <script>
+    function fmt(secs) {
+      const h = Math.floor(secs / 3600)
+      const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0')
+      const s = String(secs % 60).padStart(2, '0')
+      return h > 0 ? `${h}:${m}:${s}` : `${m}:${s}`
+    }
+
+    function handlePause() { window.overlayApi.sendCommand('pause') }
+    function handleStop()  { window.overlayApi.sendCommand('stop') }
+
+    window.overlayApi.onState(({ duration, isPaused }) => {
+      document.getElementById('timer').textContent = fmt(duration)
+      document.getElementById('btnPause').textContent = isPaused ? 'Resume' : 'Pause'
+      document.getElementById('dot').className = isPaused ? 'dot paused' : 'dot'
+    })
+  </script>
+</body>
+</html>
