@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { NButton, NInput, NCheckbox } from 'naive-ui'
 import { signup, setToken } from '../services/api'
 
-const router = useRouter()
 const route = useRoute()
 
 const name = ref('')

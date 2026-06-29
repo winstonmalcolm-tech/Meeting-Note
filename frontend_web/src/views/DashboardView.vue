@@ -46,7 +46,8 @@ const planLabel = computed(() => {
   return me.value.plan.charAt(0).toUpperCase() + me.value.plan.slice(1)
 })
 
-const planPrice = computed(() => ({ starter: '$9', pro: '$20', power: '$45' }[me.value?.plan ?? ''] ?? '')  )
+const PRICES: Record<string, string> = { starter: '$9', pro: '$20', power: '$45' }
+const planPrice = computed(() => (me.value?.plan ? PRICES[me.value.plan] : '') ?? '')
 
 const renewsAt = computed(() => {
   if (!me.value?.usagePeriodStart) return ''

@@ -21,15 +21,15 @@ const planLabel = computed(() => {
   return props.me.plan.charAt(0).toUpperCase() + props.me.plan.slice(1)
 })
 
-const planPrice = computed(() =>
-  ({ starter: '$9', pro: '$20', power: '$45' }[props.me.plan ?? ''] ?? '')
-)
+const PRICES: Record<string, string> = { starter: '$9', pro: '$20', power: '$45' }
+const planPrice = computed(() => (props.me.plan ? PRICES[props.me.plan] : '') ?? '')
 
-const planPerks = computed(() => ({
+const PERKS: Record<string, string[]> = {
   starter: ['5 hrs / month', 'Transcription & extraction', 'AI chat'],
   pro: ['15 hrs / month', 'Interview Coach', 'Live Assistant', 'AI chat'],
   power: ['40 hrs / month', 'Interview Coach', 'Live Assistant', 'Priority support'],
-}[props.me.plan ?? ''] ?? []))
+}
+const planPerks = computed(() => (props.me.plan ? PERKS[props.me.plan] : []) ?? [])
 
 const renewsAt = computed(() => {
   const d = new Date(props.me.usagePeriodStart)

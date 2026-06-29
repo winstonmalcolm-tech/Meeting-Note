@@ -18,7 +18,6 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 
 // Update these URLs when release builds are published
 const DOWNLOAD_WINDOWS = '#download'
-const DOWNLOAD_MAC = '#download'
 
 const email = ref('')
 const submitting = ref(false)
