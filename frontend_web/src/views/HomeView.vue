@@ -17,7 +17,7 @@ const router = useRouter()
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 
 // Update these URLs when release builds are published
-const DOWNLOAD_WINDOWS = '#download'
+const DOWNLOAD_WINDOWS = 'https://github.com/winstonmalcolm-tech/Meeting-Note/releases/download/1.0.0/MeetingNote.Setup.1.0.0.exe'
 
 const email = ref('')
 const submitting = ref(false)
@@ -214,7 +214,7 @@ const faqs = [
 
         <!-- Download CTAs -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
-          <a :href="DOWNLOAD_WINDOWS" @click.prevent="scrollTo('download')">
+          <a :href="DOWNLOAD_WINDOWS" target="_blank" rel="noopener">
             <NButton type="primary" size="large" class="w-full sm:w-auto px-8">
               <template #icon><Download :size="16" /></template>
               Download for Windows

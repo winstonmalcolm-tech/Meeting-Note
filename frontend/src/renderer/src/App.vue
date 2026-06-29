@@ -36,7 +36,8 @@ async function refreshPlan() {
 }
 
 function openUpgradePage() {
-  window.api.openExternal('http://localhost:5173/dashboard')
+  const webUrl = import.meta.env.VITE_WEB_URL ?? 'http://localhost:5173'
+  window.api.openExternal(`${webUrl}/dashboard`)
 }
 
 async function checkNotifications() {
