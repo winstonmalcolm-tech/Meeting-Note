@@ -34,14 +34,19 @@ mongoose.connect(MONGODB_URI)
 const app = express()
 const PORT = process.env.PORT ?? 3001
 
+const ALLOWED_ORIGINS = new Set([
+  'https://meetingnoteai.netlify.app',
+])
+
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || origin === 'file://' || /^http:\/\/localhost(:\d+)?$/.test(origin) || /^chrome-extension:\/\//.test(origin)) {
+    if (!origin || origin === 'file://' || /^http:\/\/localhost(:\d+)?$/.test(origin) || /^chrome-extension:\/\//.test(origin) || ALLOWED_ORIGINS.has(origin)) {
       cb(null, true)
     } else {
       cb(null, false)
     }
-  }
+  },
+  credentials: true,
 }))
 
 // Raw body parsers must come before express.json() to prevent body consumption
