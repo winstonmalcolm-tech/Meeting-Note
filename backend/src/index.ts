@@ -128,9 +128,13 @@ wss.on('connection', (ws, req) => {
       session?.sendAudio(data as Buffer)
     } else {
       try {
-        const msg = JSON.parse(data.toString()) as { type: string; text?: string }
+        const msg = JSON.parse(data.toString()) as { type: string; text?: string; enabled?: boolean }
         if (msg.type === 'user_message' && msg.text) {
           session?.handleUserMessage(msg.text)
+        } else if (msg.type === 'set_auto_answer' && typeof msg.enabled === 'boolean') {
+          session?.setAutoAnswer(msg.enabled)
+        } else if (msg.type === 'trigger_answer') {
+          session?.triggerManualAnswer()
         }
       } catch { /* ignore malformed control messages */ }
     }

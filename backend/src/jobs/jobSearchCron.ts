@@ -4,7 +4,7 @@ import { SavedJob } from '../models/savedJob'
 import { User } from '../models/user'
 import { Notification } from '../models/notification'
 import { UserProfile } from '../models/userProfile'
-import { fetchFromJSearch, scoreFit } from '../routes/jobSearch'
+import { fetchMultiplePagesFromJSearch, scoreFit } from '../routes/jobSearch'
 import { getAvailableProviders } from '../provider-registry'
 
 // Runs every day at 8:00 AM server time
@@ -33,8 +33,10 @@ export async function runJobSearchRefresh() {
     try {
       const userId = search.userId.toString()
 
-      // Fetch latest jobs from JSearch (page 1 — most recent)
-      const jobs = await fetchFromJSearch(search.query, search.location, 1)
+      // Pull several pages so jobs aren't limited to the same relevance-ranked
+      // page 1 every day, while date_posted='month' still excludes ancient
+      // evergreen listings without cutting off jobs still open a few weeks out
+      const jobs = await fetchMultiplePagesFromJSearch(search.query, search.location, 3, 'month')
 
       // Score against user's resume if available
       let scoredJobs = jobs

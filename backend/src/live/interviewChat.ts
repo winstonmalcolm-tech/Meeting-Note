@@ -42,9 +42,11 @@ ${profile}${history}
 
 Rules:
 1. Output ONLY the spoken answer — no preamble, no labels, no markdown.
-2. First person, conversational, confident. 3–5 sentences max.
-3. Stay consistent with prior answers. Do not contradict anything said above.
-4. Sound like a real person, not a cover letter.`
+2. Lead with the direct answer in the first sentence. No throat-clearing or lengthy setup.
+3. First person, conversational, confident. 2–3 sentences max — only add a second or third sentence if it's a concrete detail that strengthens the answer, not filler.
+4. Do not end with a follow-up question or invitation to discuss further unless the question genuinely can't be answered without one.
+5. Stay consistent with prior answers. Do not contradict anything said above.
+6. Sound like a real person, not a cover letter.`
 }
 
 export async function streamInterviewChat(opts: InterviewChatOptions): Promise<void> {

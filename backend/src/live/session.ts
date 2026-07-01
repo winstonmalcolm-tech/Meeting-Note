@@ -36,6 +36,7 @@ export class LiveSession {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null
   private aiRunning = false
   private aiCallCount = 0
+  private autoAnswer = true
   private dg: WsClient | null = null
   private audioQueue: Buffer[] = []
   private profile: UserProfile = { targetRole: '', skills: '', experience: '' }
@@ -149,6 +150,21 @@ export class LiveSession {
     void this.fireAiResponse()
   }
 
+  setAutoAnswer(enabled: boolean): void {
+    this.autoAnswer = enabled
+    if (!enabled && this.debounceTimer) {
+      clearTimeout(this.debounceTimer)
+      this.debounceTimer = null
+    }
+  }
+
+  // Manually requested answer for the last question picked up while
+  // auto-answer was off — bypasses the debounce and fires immediately.
+  triggerManualAnswer(): void {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer)
+    void this.fireAiResponse()
+  }
+
   close(): void {
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
     if (this.dg && this.dg.readyState !== WsClient.CLOSED) this.dg.close()
@@ -161,6 +177,7 @@ export class LiveSession {
   }
 
   private scheduleAiResponse(): void {
+    if (!this.autoAnswer) return
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
     this.debounceTimer = setTimeout(() => void this.fireAiResponse(), DEBOUNCE_MS)
   }

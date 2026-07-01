@@ -29,12 +29,17 @@ export interface JobResult {
 
 // ── JSearch fetch ─────────────────────────────────────────────────────────────
 
-export async function fetchFromJSearch(query: string, location: string, page: number): Promise<JobResult[]> {
+export async function fetchFromJSearch(
+  query: string,
+  location: string,
+  page: number,
+  datePosted: 'all' | 'today' | '3days' | 'week' | 'month' = 'all'
+): Promise<JobResult[]> {
   const params = new URLSearchParams({
     query: location ? `${query} in ${location}` : query,
     page: String(page),
     num_pages: '1',
-    date_posted: 'all',
+    date_posted: datePosted,
   })
 
   const resp = await fetch(`https://jsearch.p.rapidapi.com/search?${params.toString()}`, {
@@ -65,6 +70,24 @@ export async function fetchFromJSearch(query: string, location: string, page: nu
       postedAt: j.job_posted_at_datetime_utc ?? '',
     }
   })
+}
+
+// Fetch several pages of results and merge/dedupe by job id. JSearch ranks by
+// relevance rather than recency, so a single page tends to return the same
+// evergreen top results on every call — pulling deeper pages surfaces jobs
+// that never make it to page 1.
+export async function fetchMultiplePagesFromJSearch(
+  query: string,
+  location: string,
+  pageCount: number,
+  datePosted: 'all' | 'today' | '3days' | 'week' | 'month' = 'all'
+): Promise<JobResult[]> {
+  const pages = await Promise.all(
+    Array.from({ length: pageCount }, (_, i) => fetchFromJSearch(query, location, i + 1, datePosted))
+  )
+  const byId = new Map<string, JobResult>()
+  for (const job of pages.flat()) byId.set(job.id, job)
+  return Array.from(byId.values())
 }
 
 // ── Fit scoring ───────────────────────────────────────────────────────────────
