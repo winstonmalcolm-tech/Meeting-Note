@@ -7,17 +7,17 @@ import { UserProfile } from '../models/userProfile'
 import { fetchMultiplePagesFromJSearch, scoreFit } from '../routes/jobSearch'
 import { getAvailableProviders } from '../provider-registry'
 
-// Runs every day at 8:00 AM server time
+// Runs every day at 9:00 AM Jamaica time
 export function startJobSearchCron() {
-  cron.schedule('0 8 * * *', async () => {
+  cron.schedule('0 9 * * *', async () => {
     console.log('[cron] Running daily job search refresh…')
     try {
       await runJobSearchRefresh()
     } catch (err) {
       console.error('[cron] Job search refresh failed:', err instanceof Error ? err.message : err)
     }
-  })
-  console.log('[cron] Job search refresh scheduled (daily at 8:00 AM)')
+  }, { timezone: 'America/Jamaica' })
+  console.log('[cron] Job search refresh scheduled (daily at 9:00 AM America/Jamaica)')
 }
 
 export async function runJobSearchRefresh() {

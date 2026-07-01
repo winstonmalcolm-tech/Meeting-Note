@@ -2,7 +2,7 @@ import cron from 'node-cron'
 import { Interview } from '../models/interview'
 import { User } from '../models/user'
 import { Notification } from '../models/notification'
-// Runs every day at 9:00 AM server time
+// Runs every day at 9:00 AM Jamaica time
 export function startInterviewReminderJob() {
   cron.schedule('0 9 * * *', async () => {
     console.log('[cron] Running interview reminder check…')
@@ -11,8 +11,8 @@ export function startInterviewReminderJob() {
     } catch (err) {
       console.error('[cron] Interview reminder failed:', err instanceof Error ? err.message : err)
     }
-  })
-  console.log('[cron] Interview reminder job scheduled (daily at 9:00 AM)')
+  }, { timezone: 'America/Jamaica' })
+  console.log('[cron] Interview reminder job scheduled (daily at 9:00 AM America/Jamaica)')
 }
 
 export async function sendReminders() {
